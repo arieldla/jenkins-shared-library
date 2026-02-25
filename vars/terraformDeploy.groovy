@@ -8,15 +8,16 @@ def call(Map config) {
         sh 'terraform init'
         sh "terraform workspace new ${workspace} || terraform workspace select ${workspace}"
 
+        def varFileArg = varFile ? "-var-file=${varFile}" : ''
+
         if (action == 'plan') {
-            sh "terraform plan ${varFile ? \"-var-file=${varFile}\" : ''} -out=tfplan"
+            sh "terraform plan ${varFileArg} -out=tfplan"
 
         } else if (action == 'apply') {
-            sh "terraform apply -auto-approve ${varFile ? \"-var-file=${varFile}\" : ''}"
+            sh "terraform apply -auto-approve ${varFileArg}"
 
         } else if (action == 'destroy') {
-            sh "terraform destroy -auto-approve ${varFile ? \"-var-file=${varFile}\" : ''}"
+            sh "terraform destroy -auto-approve ${varFileArg}"
         }
     }
 }
-
