@@ -1,0 +1,46 @@
+name: CI - Security Scan
+
+on:
+  push:
+    branches: ["main", "master", "develop", "feature/*"]
+  pull_request:
+    branches: ["main", "master"]
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+jobs:
+  trivy-scan:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trivy - Full Scan (SARIF)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy.sarif"
+          severity: "CRITICAL,HIGH,MEDIUM"
+          exit-code: "0"
+          ignore-unfixed: true
+
+      - name: Upload to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy.sarif"
+
+      - name: Trivy - IaC Misconfig (fail on CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "config"
+          scan-ref: "."
+          format: "table"
+          severity: "CRITICAL"
+          exit-code: "1"
