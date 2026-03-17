@@ -61,9 +61,9 @@ pipeline {
         stage('AWS Auth') {
             steps {
                 awsAuth(
-                    trustAnchorArn: 'arn:aws:rolesanywhere:us-east-1:640168421612:trust-anchor/...',
-                    profileArn:     'arn:aws:rolesanywhere:us-east-1:640168421612:profile/...',
-                    roleArn:        'arn:aws:iam::640168421612:role/JenkinsLabRole'
+                    trustAnchorArn: 'arn:aws:rolesanywhere:us-east-1:<account-id>:trust-anchor/...',
+                    profileArn:     'arn:aws:rolesanywhere:us-east-1:<account-id>:profile/...',
+                    roleArn:        'arn:aws:iam::<account-id>:role/JenkinsLabRole'
                 )
             }
         }
